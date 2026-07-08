@@ -71,10 +71,10 @@ body { background: var(--bg); }
   <div class="adm-gate-card">
     <img src="images/logo-project.png" alt="Slatter Design co." class="adm-gate-logo">
     <h1 class="adm-gate-heading">Admin Access</h1>
-    <form id="login-form">
+    <form id="login-form" onsubmit="event.preventDefault(); doLogin();">
       <input type="password" id="pw-input" class="adm-input" placeholder="Password" autocomplete="current-password">
       <p id="login-error" class="adm-gate-error"></p>
-      <button type="button" onclick="doLogin()" class="adm-btn adm-btn--primary" style="width:100%;margin-top:16px;justify-content:center">Enter</button>
+      <button type="submit" class="adm-btn adm-btn--primary" style="width:100%;margin-top:16px;justify-content:center">Enter</button>
     </form>
   </div>
 </div>
