@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<title>Admin — Slatter Design</title>
+<style>
+body { background: var(--bg); }
+[hidden] { display: none !important; }
+
+/* Login */
+.adm-gate { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:100; }
+.adm-gate-card { background:#fff; border:1px solid var(--parchment); padding:52px 44px; max-width:360px; width:100%; text-align:center; }
+.adm-gate-logo { height:44px; width:auto; margin:0 auto 32px; display:block; }
+.adm-gate-heading { font-family:var(--font-display); font-weight:100; font-size:28px; color:var(--dark-teal); margin:0 0 24px; font-variation-settings:"SOFT" 0,"WONK" 1; }
+.adm-gate-error { font-family:var(--font-mono); font-size:12px; color:#b93b3b; min-height:18px; margin:8px 0 0; }
+
+/* Header */
+.adm-header { background:var(--dark-teal); padding:20px var(--edge); display:flex; align-items:center; justify-content:space-between; }
+.adm-header-logo { height:36px; width:auto; filter:brightness(0) invert(1); opacity:.85; }
+.adm-header-right { display:flex; align-items:center; gap:20px; }
+.adm-header-link { font-family:var(--font-mono); font-size:12px; letter-spacing:.06em; color:rgba(244,240,230,.75); text-decoration:underline; }
+.adm-header-link:hover { color:var(--cream); }
+
+/* Main */
+.adm-main { max-width:900px; margin:0 auto; padding:52px var(--edge) 120px; }
+.adm-toolbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.adm-heading { font-family:var(--font-display); font-weight:300; font-size:36px; color:var(--dark-teal); margin:0; font-variation-settings:"SOFT" 0,"WONK" 1; }
+.adm-hint { font-family:var(--font-mono); font-size:11px; letter-spacing:.06em; color:rgba(23,36,34,.4); margin:0 0 32px; text-transform:uppercase; }
+
+/* Buttons */
+.adm-btn { font-family:var(--font-mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; padding:10px 22px; border:none; cursor:pointer; transition:background .18s,color .18s,border-color .18s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.adm-btn--primary { background:var(--coral); color:#fff; }
+.adm-btn--primary:hover { background:var(--dark-teal); }
+.adm-btn--ghost { background:transparent; color:var(--dark-teal); border:1px solid var(--parchment); }
+.adm-btn--ghost:hover { border-color:var(--coral); color:var(--coral); }
+.adm-input { width:100%; font-family:var(--font-body); font-size:14px; color:var(--ink); background:#fff; border:1px solid var(--parchment); padding:10px 13px; box-sizing:border-box; }
+.adm-input:focus { outline:none; border-color:var(--coral); }
+
+/* Project list */
+.adm-list { display:flex; flex-direction:column; gap:0; }
+.adm-item { display:flex; align-items:center; gap:20px; padding:16px 0; border-bottom:1px solid rgba(218,214,203,.5); cursor:default; }
+.adm-item:first-child { border-top:1px solid rgba(218,214,203,.5); }
+.adm-handle { font-size:20px; color:var(--parchment); cursor:grab; user-select:none; flex-shrink:0; padding:0 4px; line-height:1; }
+.adm-handle:active { cursor:grabbing; }
+.adm-item.sortable-ghost { opacity:.4; }
+
+/* Thumbnail */
+.adm-thumb-label { position:relative; flex-shrink:0; cursor:pointer; display:block; }
+.adm-thumb { width:80px; height:60px; object-fit:cover; display:block; background:var(--parchment); }
+.adm-thumb-overlay { position:absolute; inset:0; background:rgba(18,69,68,.55); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase; color:#fff; opacity:0; transition:opacity .2s; }
+.adm-thumb-label:hover .adm-thumb-overlay { opacity:1; }
+
+/* Inline name */
+.adm-item-name { flex:1; font-family:var(--font-mono); font-size:14px; color:var(--dark-teal); border:1px solid transparent; padding:6px 8px; border-radius:0; outline:none; background:transparent; }
+.adm-item-name:focus { border-color:var(--coral); background:#fff; }
+.adm-item-name:hover:not(:focus) { border-color:var(--parchment); }
+
+/* Saving indicator */
+.adm-saving { font-family:var(--font-mono); font-size:11px; color:var(--teal-mid); position:fixed; bottom:28px; right:28px; background:#fff; border:1px solid var(--parchment); padding:8px 16px; opacity:0; transition:opacity .3s; pointer-events:none; }
+.adm-saving.visible { opacity:1; }
+</style>
+</head>
+<body>
+
+<!-- Password gate -->
+<div id="gate" class="adm-gate">
+  <div class="adm-gate-card">
+    <img src="images/logo-project.png" alt="Slatter Design co." class="adm-gate-logo">
+    <h1 class="adm-gate-heading">Admin Access</h1>
+    <form id="login-form">
+      <input type="password" id="pw-input" class="adm-input" placeholder="Password" autocomplete="current-password">
+      <p id="login-error" class="adm-gate-error"></p>
+      <button type="button" onclick="doLogin()" class="adm-btn adm-btn--primary" style="width:100%;margin-top:16px;justify-content:center">Enter</button>
+    </form>
+  </div>
+</div>
+
+<!-- Admin UI -->
+<div id="admin-ui" hidden>
+  <header class="adm-header">
+    <img src="images/logo-project.png" alt="Slatter Design co." class="adm-header-logo">
+    <div class="adm-header-right">
+      <a href="index.html" class="adm-header-link">← Back to site</a>
+      <button type="button" class="adm-btn adm-btn--ghost" style="color:rgba(244,240,230,.75);border-color:rgba(244,240,230,.3)" onclick="logout()">Log out</button>
+    </div>
+  </header>
+
+  <main class="adm-main">
+    <div class="adm-toolbar">
+      <h2 class="adm-heading">Projects</h2>
+      <a href="admin-project.html?new=1" class="adm-btn adm-btn--primary">+ Add Project</a>
+    </div>
+    <p class="adm-hint">Drag to reorder &nbsp;·&nbsp; Click a name to edit &nbsp;·&nbsp; Click a thumbnail to replace</p>
+    <div id="projects-list" class="adm-list"></div>
+  </main>
+</div>
+
+<div id="saving-toast" class="adm-saving">Saving…</div>
+
+<script>
+var toast = document.getElementById('saving-toast');
+function showToast(msg) {
+  toast.textContent = msg || 'Saved';
+  toast.classList.add('visible');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function() { toast.classList.remove('visible'); }, 1800);
+}
+
+function isLoggedIn() { return sessionStorage.getItem('adm') === '1'; }
+function logout() { sessionStorage.removeItem('adm'); location.reload(); }
+
+function doLogin() {
+  var pw = document.getElementById('pw-input').value;
+  if (pw === 'Slatter87') {
+    sessionStorage.setItem('adm', '1');
+    document.getElementById('login-error').textContent = '';
+    document.getElementById('gate').hidden = true;
+    document.getElementById('admin-ui').hidden = false;
+    initAdmin();
+  } else {
+    document.getElementById('login-error').textContent = 'Incorrect password.';
+  }
+}
+
+// Load CDN scripts lazily after auth, in dependency order
+function initAdmin() {
+  var s1 = document.createElement('script');
+  s1.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  s1.onload = function() {
+    var s2 = document.createElement('script');
+    s2.src = 'js/supabase-config.js';
+    s2.onload = function() {
+      var s3 = document.createElement('script');
+      s3.src = 'https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js';
+      s3.onload = loadProjects;
+      document.head.appendChild(s3);
+    };
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s1);
+}
+
+// Load
+async function loadProjects() {
+  var list = document.getElementById('projects-list');
+  list.innerHTML = '<p style="font-family:var(--font-mono);font-size:12px;color:var(--coral)">Loading…</p>';
+  var { data, error } = await window.db.from('projects').select('id,client,grid_image_url,sort_order').order('sort_order', { ascending: true });
+  if (error) { list.innerHTML = '<p style="color:#b93b3b;font-family:var(--font-mono);font-size:12px">' + error.message + '</p>'; return; }
+
+  list.innerHTML = data.map(function(p) {
+    var src = p.grid_image_url || '';
+    return '<div class="adm-item" data-id="' + p.id + '">' +
+      '<span class="adm-handle" title="Drag to reorder">&#8942;&#8942;</span>' +
+      '<label class="adm-thumb-label" title="Click to replace thumbnail">' +
+        (src ? '<img src="' + src + '" class="adm-thumb">' : '<div class="adm-thumb" style="display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:10px;color:rgba(23,36,34,.3)">No image</div>') +
+        '<div class="adm-thumb-overlay">Replace</div>' +
+        '<input type="file" accept="image/*" class="adm-thumb-file" data-id="' + p.id + '" hidden>' +
+      '</label>' +
+      '<span class="adm-item-name" contenteditable="true" data-id="' + p.id + '" spellcheck="false">' + escText(p.client) + '</span>' +
+      '<a href="admin-project.html?id=' + p.id + '" class="adm-btn adm-btn--ghost" style="flex-shrink:0;font-size:11px;padding:7px 14px">Edit project →</a>' +
+    '</div>';
+  }).join('');
+
+  // Drag to reorder
+  Sortable.create(list, {
+    handle: '.adm-handle',
+    animation: 150,
+    onEnd: saveOrder
+  });
+
+  // Thumbnail replace
+  list.addEventListener('change', async function(e) {
+    if (!e.target.classList.contains('adm-thumb-file')) return;
+    var file = e.target.files[0];
+    if (!file) return;
+    var id = e.target.dataset.id;
+    showToast('Uploading…');
+    try {
+      var url = await uploadFile(file, 'grid/' + id);
+      await window.db.from('projects').update({ grid_image_url: url }).eq('id', id);
+      var img = e.target.closest('.adm-thumb-label').querySelector('.adm-thumb');
+      if (img.tagName === 'IMG') img.src = url;
+      else { var newImg = document.createElement('img'); newImg.src = url; newImg.className = 'adm-thumb'; img.replaceWith(newImg); }
+      showToast('Thumbnail saved');
+    } catch(err) { showToast('Error: ' + err.message); }
+    e.target.value = '';
+  });
+
+  // Inline name edit — save on blur
+  list.addEventListener('blur', async function(e) {
+    if (!e.target.classList.contains('adm-item-name')) return;
+    var id = e.target.dataset.id;
+    var name = e.target.textContent.trim();
+    if (!name) return;
+    showToast('Saving…');
+    await window.db.from('projects').update({ client: name }).eq('id', id);
+    showToast('Name saved');
+  }, true);
+}
+
+async function saveOrder() {
+  showToast('Saving order…');
+  var items = document.querySelectorAll('.adm-item');
+  await Promise.all(Array.from(items).map(function(item, i) {
+    return window.db.from('projects').update({ sort_order: i + 1 }).eq('id', item.dataset.id);
+  }));
+  showToast('Order saved');
+}
+
+async function uploadFile(file, pathPrefix) {
+  var ext = file.name.split('.').pop().toLowerCase();
+  var path = pathPrefix + '-' + Date.now() + '.' + ext;
+  var { error } = await window.db.storage.from('project-images').upload(path, file, { upsert: true });
+  if (error) throw new Error(error.message);
+  return window.db.storage.from('project-images').getPublicUrl(path).data.publicUrl;
+}
+
+function escText(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Boot — already logged in
+if (isLoggedIn()) {
+  document.getElementById('gate').hidden = true;
+  document.getElementById('admin-ui').hidden = false;
+  initAdmin();
+}
+</script>
+</body>
+</html>

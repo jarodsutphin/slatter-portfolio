@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<title>Edit Project — Slatter Admin</title>
+<style>
+body { background:var(--bg); }
+
+.adm-header { background:var(--dark-teal); padding:20px var(--edge); display:flex; align-items:center; justify-content:space-between; }
+.adm-header-logo { height:36px; width:auto; filter:brightness(0) invert(1); opacity:.85; }
+.adm-header-right { display:flex; align-items:center; gap:20px; }
+.adm-header-link { font-family:var(--font-mono); font-size:12px; letter-spacing:.06em; color:rgba(244,240,230,.75); text-decoration:underline; }
+.adm-header-link:hover { color:var(--cream); }
+
+.adm-main { max-width:860px; margin:0 auto; padding:52px var(--edge) 120px; }
+.adm-heading { font-family:var(--font-display); font-weight:300; font-size:36px; color:var(--dark-teal); margin:0 0 40px; font-variation-settings:"SOFT" 0,"WONK" 1; }
+.adm-heading span { color:var(--coral-light); }
+
+.adm-label { display:block; font-family:var(--font-mono); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--coral); margin:24px 0 7px; }
+.adm-label:first-child { margin-top:0; }
+.adm-input { width:100%; font-family:var(--font-body); font-size:15px; color:var(--ink); background:#fff; border:1px solid var(--parchment); padding:11px 14px; box-sizing:border-box; }
+.adm-input:focus { outline:none; border-color:var(--coral); }
+.adm-textarea { resize:vertical; min-height:110px; }
+.adm-select { appearance:none; }
+
+.adm-grid { display:grid; grid-template-columns:1fr 1fr; gap:48px; }
+
+/* Image zones */
+.adm-img-section { margin-top:8px; }
+.adm-img-current { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; background:var(--parchment); margin-bottom:10px; }
+.adm-img-empty { width:100%; aspect-ratio:4/3; background:var(--parchment); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:11px; color:rgba(23,36,34,.3); margin-bottom:10px; }
+.adm-upload-btn { display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--coral); border:1px solid var(--coral); padding:8px 14px; cursor:pointer; }
+.adm-upload-btn:hover { background:var(--coral); color:#fff; }
+
+.adm-full-imgs { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; min-height:10px; }
+.adm-full-img-wrap { position:relative; }
+.adm-full-img-thumb { width:90px; height:68px; object-fit:cover; display:block; background:var(--parchment); }
+.adm-remove-img { position:absolute; top:3px; right:3px; background:rgba(18,69,68,.85); color:#fff; border:none; font-size:14px; width:22px; height:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; }
+
+/* Buttons */
+.adm-btn { font-family:var(--font-mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; padding:12px 24px; border:none; cursor:pointer; transition:background .18s,color .18s,border-color .18s; display:inline-flex; align-items:center; gap:6px; text-decoration:none; }
+.adm-btn--primary { background:var(--coral); color:#fff; }
+.adm-btn--primary:hover { background:var(--dark-teal); }
+.adm-btn--ghost { background:transparent; color:var(--dark-teal); border:1px solid var(--parchment); }
+.adm-btn--ghost:hover { border-color:var(--coral); color:var(--coral); }
+.adm-btn--danger { background:transparent; color:#b93b3b; border:1px solid #b93b3b; }
+.adm-btn--danger:hover { background:#b93b3b; color:#fff; }
+.adm-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+.adm-actions { display:flex; align-items:center; gap:12px; margin-top:48px; padding-top:32px; border-top:1px solid var(--parchment); }
+.adm-status { font-family:var(--font-mono); font-size:12px; color:var(--teal-mid); margin-left:auto; }
+.adm-divider { margin-top:48px; padding-top:32px; border-top:1px solid var(--parchment); }
+</style>
+</head>
+<body>
+
+<header class="adm-header">
+  <img src="images/logo-project.png" alt="Slatter Design co." class="adm-header-logo">
+  <div class="adm-header-right">
+    <a href="admin.html" class="adm-header-link">← All Projects</a>
+    <a href="index.html" class="adm-header-link">View site</a>
+  </div>
+</header>
+
+<main class="adm-main">
+  <h1 class="adm-heading" id="page-heading">Edit Project</h1>
+
+  <form id="project-form">
+    <div class="adm-grid">
+      <!-- Left col: text -->
+      <div>
+        <label class="adm-label">Client</label>
+        <input type="text" id="f-client" class="adm-input" required placeholder="e.g. Ackland Art Museum">
+
+        <label class="adm-label">Project Name</label>
+        <input type="text" id="f-project-name" class="adm-input" required placeholder="e.g. 60th Anniversary Invitation">
+
+        <label class="adm-label">Blurb</label>
+        <textarea id="f-blurb" class="adm-input adm-textarea" placeholder="Short description shown on the project page…"></textarea>
+
+        <label class="adm-label">Category</label>
+        <select id="f-category" class="adm-input adm-select">
+          <option value="print">Print</option>
+          <option value="illustration">Illustration</option>
+          <option value="branding">Branding</option>
+          <option value="digital">Digital</option>
+        </select>
+
+        <label class="adm-label">URL Slug</label>
+        <input type="text" id="f-slug" class="adm-input" required placeholder="e.g. ackland-art-museum">
+
+        <label class="adm-label">Sort Order</label>
+        <input type="number" id="f-sort" class="adm-input" min="1" value="99">
+      </div>
+
+      <!-- Right col: images -->
+      <div>
+        <label class="adm-label">Grid Thumbnail</label>
+        <div class="adm-img-section">
+          <div id="grid-preview"></div>
+          <label class="adm-upload-btn">
+            <input type="file" id="grid-upload" accept="image/*" hidden>
+            Replace thumbnail
+          </label>
+        </div>
+
+        <label class="adm-label" style="margin-top:32px">Project Images</label>
+        <div class="adm-img-section">
+          <div class="adm-full-imgs" id="full-imgs-list"></div>
+          <label class="adm-upload-btn">
+            <input type="file" id="full-upload" accept="image/*" multiple hidden>
+            Add image(s)
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="adm-actions">
+      <button type="submit" id="save-btn" class="adm-btn adm-btn--primary">Save Changes</button>
+      <a href="admin.html" class="adm-btn adm-btn--ghost">Cancel</a>
+      <span id="save-status" class="adm-status"></span>
+    </div>
+  </form>
+
+  <!-- Delete -->
+  <div class="adm-divider" id="delete-section" hidden>
+    <button type="button" class="adm-btn adm-btn--danger" onclick="deleteProject()">Delete this project</button>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script>
+// Auth guard
+if (!sessionStorage.getItem('adm')) { window.location.replace('admin.html'); }
+
+var params       = new URLSearchParams(window.location.search);
+var projectId    = params.get('id');
+var isNew        = params.get('new') === '1';
+var gridUrl      = '';
+var fullUrls     = [];
+
+function setStatus(msg, err) {
+  var el = document.getElementById('save-status');
+  el.textContent = msg;
+  el.style.color = err ? '#b93b3b' : 'var(--teal-mid)';
+}
+
+// Load existing project
+async function loadProject() {
+  if (isNew) {
+    document.getElementById('page-heading').innerHTML = 'Add Project';
+    renderGridPreview();
+    renderFullImgs();
+    return;
+  }
+  if (!projectId) { window.location.replace('admin.html'); return; }
+
+  var { data: p, error } = await window.db.from('projects').select('*').eq('id', projectId).single();
+  if (error || !p) { alert('Could not load project.'); window.location.replace('admin.html'); return; }
+
+  document.getElementById('page-heading').innerHTML = 'Edit <span>' + escText(p.client) + '</span>';
+  document.getElementById('f-client').value       = p.client        || '';
+  document.getElementById('f-project-name').value = p.project_name  || '';
+  document.getElementById('f-blurb').value         = p.blurb         || '';
+  document.getElementById('f-category').value      = p.category      || 'print';
+  document.getElementById('f-slug').value          = p.slug          || '';
+  document.getElementById('f-sort').value          = p.sort_order    != null ? p.sort_order : 99;
+
+  gridUrl  = p.grid_image_url  || '';
+  fullUrls = (p.full_image_urls || []).slice();
+
+  renderGridPreview();
+  renderFullImgs();
+  document.getElementById('delete-section').hidden = false;
+}
+
+// Previews
+function renderGridPreview() {
+  document.getElementById('grid-preview').innerHTML = gridUrl
+    ? '<img src="' + esc(gridUrl) + '" class="adm-img-current">'
+    : '<div class="adm-img-empty">No thumbnail yet</div>';
+}
+
+function renderFullImgs() {
+  document.getElementById('full-imgs-list').innerHTML = fullUrls.map(function(url, i) {
+    return '<div class="adm-full-img-wrap">' +
+      '<img src="' + esc(url) + '" class="adm-full-img-thumb">' +
+      '<button type="button" class="adm-remove-img" data-i="' + i + '" title="Remove">&times;</button>' +
+    '</div>';
+  }).join('');
+}
+
+document.getElementById('full-imgs-list').addEventListener('click', function(e) {
+  var btn = e.target.closest('[data-i]');
+  if (btn) { fullUrls.splice(parseInt(btn.dataset.i, 10), 1); renderFullImgs(); }
+});
+
+// Uploads
+document.getElementById('grid-upload').addEventListener('change', async function() {
+  var file = this.files[0]; if (!file) return;
+  setStatus('Uploading thumbnail…');
+  try { gridUrl = await upload(file, 'grid'); renderGridPreview(); setStatus('Thumbnail uploaded.'); }
+  catch(e) { setStatus(e.message, true); }
+  this.value = '';
+});
+
+document.getElementById('full-upload').addEventListener('change', async function() {
+  var files = Array.from(this.files); if (!files.length) return;
+  setStatus('Uploading ' + files.length + ' image(s)…');
+  try {
+    for (var i = 0; i < files.length; i++) { fullUrls.push(await upload(files[i], 'full')); }
+    renderFullImgs(); setStatus(files.length + ' image(s) added.');
+  } catch(e) { setStatus(e.message, true); }
+  this.value = '';
+});
+
+async function upload(file, folder) {
+  var slug = document.getElementById('f-slug').value.trim() || 'project';
+  var ext  = file.name.split('.').pop().toLowerCase();
+  var path = folder + '/' + slug + '-' + Date.now() + '.' + ext;
+  var { error } = await window.db.storage.from('project-images').upload(path, file, { upsert: true });
+  if (error) throw new Error(error.message);
+  return window.db.storage.from('project-images').getPublicUrl(path).data.publicUrl;
+}
+
+// Save
+document.getElementById('project-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  setStatus('Saving…');
+  var payload = {
+    client:          document.getElementById('f-client').value.trim(),
+    project_name:    document.getElementById('f-project-name').value.trim(),
+    blurb:           document.getElementById('f-blurb').value.trim(),
+    category:        document.getElementById('f-category').value,
+    slug:            document.getElementById('f-slug').value.trim().toLowerCase(),
+    sort_order:      parseInt(document.getElementById('f-sort').value, 10) || 99,
+    grid_image_url:  gridUrl,
+    full_image_urls: fullUrls,
+  };
+  var res = isNew
+    ? await window.db.from('projects').insert(payload)
+    : await window.db.from('projects').update(payload).eq('id', projectId);
+  btn.disabled = false;
+  if (res.error) { setStatus(res.error.message, true); return; }
+  if (isNew) { window.location.replace('admin.html'); return; }
+  setStatus('Saved ✓');
+  document.getElementById('page-heading').innerHTML = 'Edit <span>' + escText(payload.client) + '</span>';
+});
+
+// Delete
+async function deleteProject() {
+  if (!confirm('Delete this project permanently?')) return;
+  await window.db.from('projects').delete().eq('id', projectId);
+  window.location.replace('admin.html');
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escText(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Auto-slug on new project
+document.getElementById('f-client').addEventListener('input', function() {
+  if (isNew) {
+    document.getElementById('f-slug').value = this.value.toLowerCase()
+      .replace(/[^a-z0-9\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+  }
+});
+
+loadProject();
+</script>
+</body>
+</html>
