@@ -16,6 +16,11 @@ CREATE TABLE IF NOT EXISTS projects (
 
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "public_read"  ON projects;
+DROP POLICY IF EXISTS "anon_write"   ON projects;
+DROP POLICY IF EXISTS "anon_update"  ON projects;
+DROP POLICY IF EXISTS "anon_delete"  ON projects;
+
 -- Public can read all projects
 CREATE POLICY "public_read"  ON projects FOR SELECT             USING (true);
 -- Allow writes via anon key (password gate is enforced in the admin UI)
@@ -28,6 +33,7 @@ CREATE OR REPLACE FUNCTION update_updated_at()
 RETURNS TRIGGER LANGUAGE plpgsql AS $$
 BEGIN NEW.updated_at = now(); RETURN NEW; END;
 $$;
+DROP TRIGGER IF EXISTS set_updated_at ON projects;
 CREATE TRIGGER set_updated_at BEFORE UPDATE ON projects
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
@@ -128,9 +134,34 @@ INSERT INTO projects (slug, client, project_name, blurb, category, grid_image_ur
 ON CONFLICT (slug) DO NOTHING;
 
 -- -------------------------------------------------------
--- Storage: in the Supabase dashboard go to Storage and:
--- 1. Create a bucket named  project-images  (check "Public bucket")
--- 2. Under Policies add:
---    INSERT  for role anon  WITH CHECK (true)
---    SELECT  for role anon  USING (true)
+-- Storage: project-images bucket + policies
+-- (This is what admin-project.html uploads grid/full images to.
+-- Run once in the Supabase SQL editor — safe to re-run.)
 -- -------------------------------------------------------
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('project-images', 'project-images', true)
+ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "anon_read_project_images"   ON storage.objects;
+DROP POLICY IF EXISTS "anon_upload_project_images" ON storage.objects;
+DROP POLICY IF EXISTS "anon_update_project_images" ON storage.objects;
+DROP POLICY IF EXISTS "anon_delete_project_images" ON storage.objects;
+
+CREATE POLICY "anon_read_project_images"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'project-images');
+
+CREATE POLICY "anon_upload_project_images"
+  ON storage.objects FOR INSERT
+  WITH CHECK (bucket_id = 'project-images');
+
+-- Needed because admin-project.html uploads with { upsert: true },
+-- which becomes an UPDATE when a file at that path already exists.
+CREATE POLICY "anon_update_project_images"
+  ON storage.objects FOR UPDATE
+  USING (bucket_id = 'project-images')
+  WITH CHECK (bucket_id = 'project-images');
+
+CREATE POLICY "anon_delete_project_images"
+  ON storage.objects FOR DELETE
+  USING (bucket_id = 'project-images');
