@@ -88,21 +88,23 @@ a:focus-visible, button:focus-visible {
 }
 
 .hero-inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 56px;
   align-items: flex-start;
-  gap: 90px;
   width: 100%;
   max-width: 1584px;
 }
 
 .hero-logo {
-  flex-shrink: 0;
+  grid-column: 1;
   width: 260px;
 }
 
 .hero-logo img { width: 100%; height: auto; }
 
 .hero-copy {
+  grid-column: 2 / -1;
   display: flex;
   flex-direction: column;
   gap: 50px;
@@ -111,7 +113,7 @@ a:focus-visible, button:focus-visible {
 .hero-quote {
   font-family: var(--font-display);
   font-weight: 100;
-  font-size: clamp(1.8rem, 4vw, 3.75rem);
+  font-size: clamp(1.44rem, 3.2vw, 3rem);
   line-height: 1.15;
   color: var(--coral-light);
   margin: 0;
@@ -508,8 +510,9 @@ a:focus-visible, button:focus-visible {
    Responsive
    --------------------------------------------------------- */
 @media (max-width: 900px) {
-  .hero-inner { flex-direction: column; gap: 40px; }
-  .hero-logo { width: 140px; }
+  .hero-inner { grid-template-columns: 1fr; row-gap: 40px; }
+  .hero-logo { grid-column: 1; width: 140px; }
+  .hero-copy { grid-column: 1; }
   .grid { grid-template-columns: repeat(2, 1fr); gap: 48px 24px; }
   .footer-top { flex-direction: column; align-items: flex-start; gap: 24px; }
   .footer-links { align-items: flex-start; }
